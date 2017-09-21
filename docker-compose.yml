@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+    local:
+        build: 
+            context: ./local
+            args:
+                http_proxy: "http://10.158.17.67:8080"
+                https_proxy: "https://10.158.17.67:8080"
+        command: tail -f /dev/null
+        privileged: true
+        environment:
+            - HTTP_PROXY = false
+        expose:
+            - 22
+
+    remote:
+        build: 
+            context: ./remote
+            args:
+                http_proxy: "http://10.158.17.67:8080"
+                https_proxy: "https://10.158.17.67:8080"
+        command: tail -f /dev/null
+        privileged: true
+        environment:
+            - HTTP_PROXY = false
+        expose:
+            - 22

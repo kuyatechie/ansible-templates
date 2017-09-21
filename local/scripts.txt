@@ -1,0 +1,11 @@
+# Run ansible to ping localhost
+ansible --connection=local local -m ping
+
+# Run ansible to ping fake remote server
+ansible remote -m ping
+
+# Run ansible to install nginx via shell
+ansible --connection=local local -b --become-user=root -m shell -a 'apt-get install nginx'
+
+# Run ansible to install nginx via ansible modules
+ansible --connection=local local -b --become-user=root -m apt -a 'name=nginx state=installed update_cache=true'
