@@ -1,3 +1,6 @@
+# {{ url }} {{ port }} {{ repo }}: Url port and repository of the package source
+# {{ kibana_server_ip }}: Url of kibana
+# {{ es_server_ip }}: Url of elasticsearch
 ---
 - name: Add elasticsearch apt-key
   apt_key:

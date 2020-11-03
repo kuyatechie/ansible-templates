@@ -1,3 +1,4 @@
+# {{ distro }}: Distro of the package source
 ---
 - name: Install zbxsend Module for Python
   pip:

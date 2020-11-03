@@ -1,3 +1,4 @@
+# {{ users }}: List of users
 ---
 - name: Add local users
   user:
@@ -11,19 +12,19 @@
     createhome: yes
     expires: -1
     state: present
-  with_items: "{{ local_users }}"
+  with_items: "{{ users }}"
 
 - name: Set local users authorized keys
   authorized_key:
     user: "{{ item.name }}"
     state: present
     key: "{{ item.pubkey }}"
-  with_items: "{{ local_users }}"
+  with_items: "{{ users }}"
 
-- name: Create local_users known_hosts file
+- name: Create users known_hosts file
   file:
     path: "/home/{{ item.name }}/.ssh/known_hosts"
     state: touch
     owner: "{{ item.name }}"
     group: "{{ item.name }}"
-  with_items: "{{ local_users }}"
+  with_items: "{{ users }}"

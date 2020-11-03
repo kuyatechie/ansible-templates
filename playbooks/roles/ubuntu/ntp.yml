@@ -1,3 +1,4 @@
+# {{ ntp_server }}: NTP server IP address
 ---
 - name: Populate service facts
   service_facts:

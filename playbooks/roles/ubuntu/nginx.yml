@@ -1,3 +1,5 @@
+# {{ url }} {{ port }} {{ repo }}: Url port and repository of the package source
+# {{ distro }}: Distro of the package source
 ---
 - name: "Add apt repositories"
   apt_repository:

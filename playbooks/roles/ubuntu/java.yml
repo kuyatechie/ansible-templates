@@ -1,3 +1,6 @@
+# {{ url }} {{ port }} {{ repo }}: Url port and repository of the package source
+# {{ jdk8_tarball }}: JDK8 file path
+# {{ jdk8_version }}: JDK8 version
 ---
 - name: "Set Java version"
   set_fact: 

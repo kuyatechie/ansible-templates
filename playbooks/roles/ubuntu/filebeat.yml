@@ -1,3 +1,8 @@
+# {{ url }} {{ port }} {{ repo }}: Url port and repository of the package source
+# {{ distro }}: Distro of the package source
+# {{ kibana_server_ip }}: Url of kibana
+# {{ es_server_ip }}: Url of elasticsearch
+# {{ filebeat_modules }}: List of filebeat modules i.e. metricbeat
 ---
 - name: Add elasticsearch apt-key
   apt_key:

@@ -1,3 +1,4 @@
+# {{ distro }}: Distro of the package source
 ---
 - name: "Create zabbix ssl templates directory"
   file:

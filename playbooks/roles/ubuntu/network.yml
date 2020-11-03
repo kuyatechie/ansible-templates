@@ -1,3 +1,6 @@
+# {{ allocated_ip_address }}: IP Address
+# {{ ip_gateway }}: IP Gateway 
+# {{ ip_dnsserver }}: IP nameserver
 ---
 - name: Add network interface templates
   template:

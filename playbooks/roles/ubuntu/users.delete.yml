@@ -1,8 +1,8 @@
-# {{ target_users }}: List of users
+# {{ users }}: List of users
 ---
 - name: Clean remove admin users
   user:
     name: "{{ item }}"
     state: absent
     remove: yes
-  with_items: "{{ target_users }}"
+  with_items: "{{ users }}"

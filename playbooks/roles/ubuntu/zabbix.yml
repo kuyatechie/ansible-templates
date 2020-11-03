@@ -1,3 +1,6 @@
+# {{ url }} {{ port }} {{ repo }}: Url port and repository of the package source
+# {{ distro }}: Distro of the package source
+# {{ zabbix_server_ip }}: Zabbix Server IP
 ---
 - name: "Add Zabbix apt repositories"
   apt_repository:

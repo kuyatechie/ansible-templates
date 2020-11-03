@@ -1,5 +1,7 @@
+# {{ url }} {{ port }} {{ repo }}: Url port and repository of the package source
+# {{ distro }}: Distro of the package source
+# {{ docker_insecure_registry }}: Internal docker registry via http
 ---
-# file: roles/install/tasks/docker.yml
 - name: Add Docker GPG apt Key
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg

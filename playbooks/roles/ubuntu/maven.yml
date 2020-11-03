@@ -1,3 +1,5 @@
+# {{ url }} {{ port }} {{ repo }}: Url port and repository of the package source
+# {{ mvn_version }}: MVN version
 ---
 - name: "Check if Maven 3 version exists"
   stat: 

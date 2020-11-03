@@ -1,3 +1,5 @@
+# {{ url }} {{ username }} {{ password }}: Url of the package source
+# {{ distro }}: Distro of the package source
 ---
 - name: Install apt-transport-https first
   apt:

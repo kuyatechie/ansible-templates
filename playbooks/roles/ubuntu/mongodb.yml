@@ -1,3 +1,6 @@
+# {{ url }} {{ port }} {{ repo }}: Url port and repository of the package source
+# {{ distro }}: Distro of the package source
+# {{ mongodb_* }}: Mongo DB credentials
 ---
 - name: Add MongoDB GPG apt Key
   apt_key:

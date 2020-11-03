@@ -13,6 +13,6 @@ network:
       interfaces: [eth0]
       dhcp4: no
       addresses: [{{ allocated_ip_address }}/24]
-      gateway4: {{ ip_Gateway }}
+      gateway4: {{ ip_gateway }}
       nameservers:
         addresses: [{{ ip_dnsserver }}]
