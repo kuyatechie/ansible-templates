@@ -1,0 +1,93 @@
+---
+- name: "Add Zabbix apt repositories"
+  apt_repository:
+    repo: "deb http://{{ url }}:{{ port }}/repository/{{ proxy }}/ {{ distro }} main"
+ 
+- name: "Install Zabbix agent"
+  apt:
+    name: 
+      - ufw
+      - zabbix-agent
+    state: present
+    allow_unauthenticated: yes
+    update_cache: yes
+
+- name: Add zabbix to sudo group
+  user:
+    name: zabbix
+    groups: sudo
+
+- name: "Create zabbix directory"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0775'
+    owner: zabbix
+    group: zabbix
+  with_items:
+    - '/var/lib/zabbix'
+    - '/usr/lib/zabbix/externalscripts/'
+    - '/etc/zabbix/zabbix_agentd.conf.d/'
+
+- name: "Update zabbix-agent configuration file Server"
+  lineinfile:
+    path:  /etc/zabbix/zabbix_agentd.conf
+    regexp: 'Server='
+    line: "Server={{ zabbix_server_ip }}"
+
+- name: "Update zabbix-agent configuration file ServerActive"
+  lineinfile:
+    path:  /etc/zabbix/zabbix_agentd.conf
+    regexp: 'ServerActive='
+    line: "ServerActive={{ zabbix_server_ip }}"
+
+- name: "Update zabbix-agent configuration file ListenIP"
+  lineinfile:
+    path:  /etc/zabbix/zabbix_agentd.conf
+    regexp: 'ListenIP='
+    line: "ListenIP={{ zabbix_listen_ip }}"
+
+- name: "Update zabbix-agent configuration file StartAgents"
+  lineinfile:
+    path:  /etc/zabbix/zabbix_agentd.conf
+    regexp: 'StartAgents='
+    line: "StartAgents=2"
+
+- name: "Update zabbix-agent configuration file Hostname"
+  lineinfile:
+    path:  /etc/zabbix/zabbix_agentd.conf
+    regexp: 'Hostname='
+    line: "Hostname={{ zabbix_server_hostname }}"
+
+- name: "Remove zabbix-agent configuration file Include"
+  lineinfile:
+    path:  /etc/zabbix/zabbix_agentd.conf
+    regexp: 'Include='
+    state: absent
+
+- name: "Update zabbix-agent configuration file Include"
+  lineinfile:
+    path:  /etc/zabbix/zabbix_agentd.conf
+    line: "Include=/etc/zabbix/zabbix_agentd.conf.d/*.conf"
+    insertafter: 'Option: Include'
+
+- name: "Check installed packages"
+  package_facts:
+    manager: "auto"
+
+- name: Allow access to zabbix port
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  with_items:
+    - "10050"
+    - "10051"
+
+- name: Enable Zabbix Agent
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+    - "zabbix-agent"
+    - "ufw"

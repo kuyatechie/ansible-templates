@@ -1,0 +1,54 @@
+# {{ excluded_packages }}: List of excluded packages
+---
+- name: Turn off unattended-upgrade
+  lineinfile:
+    path: /etc/apt/apt.conf.d/51disable-unattended-upgrades
+    regexp: '^{{ item }}'
+    line: '{{ item }}'
+  with_items: 
+    - 'APT::Periodic::Update-Package-Lists "0";'
+    - 'APT::Periodic::Unattended-Upgrade "0";'
+  check_mode: no
+  
+- name: Add apt packages in the update backlist
+  lineinfile:
+    path: /etc/apt/apt.conf.d/50unattended-upgrades
+    insertafter: '^Unattended-Upgrade::Package-Blacklist'
+    regexp: '^"{{ item }}";'
+    line: '"{{ item }}";'
+  with_items: "{{ excluded_packages }}"
+  check_mode: no
+
+- name: Include all packages
+  dpkg_selections:
+    name: "*"
+    selection: install
+  check_mode: no
+
+- name: Exclude all blacklisted packages
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  with_items: "{{ excluded_packages }}"
+  check_mode: no
+
+- name: Install unattended-upgrade
+  apt:
+    name:
+      - unattended-upgrades
+    update_cache: yes
+    state: present
+
+- name: Check unattended-upgrade
+  shell: unattended-upgrade --dry-run -d
+  check_mode: no
+
+- name: Run unattended-upgrade
+  shell: unattended-upgrade -d -v
+
+- name: Run apt upgrade
+  apt:
+    only_upgrade: yes
+    upgrade: safe
+    autoremove: yes
+    autoclean: yes

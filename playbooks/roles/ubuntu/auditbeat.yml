@@ -1,0 +1,33 @@
+---
+- name: Add elasticsearch apt-key
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: "Add apt repositories"
+  apt_repository:
+    repo: "deb http://{{ url }}:{{ port }}/repository/{{ repo }}/ stable main"
+
+- name: Update apt
+  apt:
+    update_cache: yes
+
+- name: Install auditbeat
+  apt:
+    name: auditbeat
+    allow_unauthenticated: yes
+
+- name: "Install auditbeat conf templates"
+  template:
+    src: "beats/auditbeat.yml.j2"
+    dest: "/etc/auditbeat/auditbeat.yml"
+    force: yes
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Start auditbeat
+  systemd:
+    state: restarted
+    name: auditbeat
+    enabled: yes

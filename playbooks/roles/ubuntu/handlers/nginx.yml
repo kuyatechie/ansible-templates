@@ -1,0 +1,43 @@
+---
+- name: "Remove default configuration file"
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+
+- name: "Update nginx configuration files"
+  template:
+    src: "nginx/{{ item }}.j2"
+    dest: /etc/nginx/sites-available/{{ item }}
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - "default.conf"
+    - "health.conf"
+
+- name: "Symlink default nginx configuration files"
+  file:
+    src: "/etc/nginx/sites-available/{{ item }}"
+    dest: /etc/nginx/sites-enabled/{{ item }}
+    owner: "root"
+    group: "root"
+    state: link
+  with_items:
+    - "default.conf"
+    - "health.conf"
+
+- name: "Create nginx.service.d directory"
+  file:
+    dest: /etc/systemd/system/nginx.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Add delay into systemctl startup"
+  template:
+    src: "nginx/override.conf.j2"
+    dest: /etc/systemd/system/nginx.service.d/override.conf
+    owner: root
+    group: root
+    mode: '0644'

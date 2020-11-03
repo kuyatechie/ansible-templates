@@ -1,0 +1,52 @@
+---
+# file: roles/install/tasks/docker.yml
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: "deb http://{{ url }}:{{ port }}/repository/{{ repo }}/ {{ distro }} stable"
+    state: present
+
+- name: Update apt and install docker-ce
+  apt: 
+    name: docker-ce 
+    state: latest
+    allow_unauthenticated: yes
+    update_cache: yes 
+    
+- name: Install Docker Module for Python
+  pip:
+    name: docker
+    executable: /usr/bin/pip3
+
+- name: Install Docker Compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.24.1/docker-compose-Linux-x86_64
+    dest: "/usr/bin/docker-compose"
+    mode: 0755
+
+- name: Add the user to docker group
+  user:
+    name: "{{ docker_user }}"
+    shell: /bin/bash
+    groups: docker
+    append: yes
+
+- name: Add insecure-registries
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
+  tags:
+    - insecure-registries
+
+- name: Start Docker
+  systemd:
+    state: started
+    name: docker
+    enabled: yes

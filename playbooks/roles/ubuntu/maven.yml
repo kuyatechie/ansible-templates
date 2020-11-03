@@ -1,0 +1,32 @@
+---
+- name: "Check if Maven 3 version exists"
+  stat: 
+    path: "/opt/local/{{ mvn3_version }}"
+  register: mvn3_stat
+
+- name: "Download and install Maven 3"
+  unarchive:
+    src: "http://{{ username }}:{{ password }}@{{ url }}:{{ port }}/repository/{{ repo }}/{{ mvn3_tarball }}"
+    remote_src: yes
+    dest: "/opt/local"
+    mode: '0755'
+    validate_certs: no
+  when: mvn3_stat.stat.exists == False
+
+- name: "Create maven symbolic link"
+  file:
+    src: "/opt/local/{{ mvn3_version }}"
+    dest: "/opt/local/maven"
+    owner: "root"
+    group: "root"
+    state: link
+  when: mvn3_stat.stat.exists == False
+
+- name: "Create mvn symbolic link"
+  file:
+    src: "/opt/local/maven/bin/mvn"
+    dest: "/usr/bin/mvn"
+    owner: "root"
+    group: "root"
+    state: link
+  when: mvn3_stat.stat.exists == False

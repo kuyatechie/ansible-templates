@@ -1,0 +1,15 @@
+server {
+
+    listen 10000;
+  
+    server_name {{ dnsname }};
+
+    # add nginx_status location for nginx monitoring
+    location /basic_status {
+        stub_status on;
+        access_log   off;
+        allow 127.0.0.1;
+        deny all;
+    }
+    
+}

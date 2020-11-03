@@ -1,0 +1,10 @@
+---
+- name: Run apt upgrade
+  apt:
+    only_upgrade: yes
+    upgrade: safe
+    autoremove: yes
+    autoclean: yes
+
+- name: Reboot the server
+  reboot:

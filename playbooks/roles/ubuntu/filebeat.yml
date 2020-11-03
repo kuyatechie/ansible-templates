@@ -1,0 +1,46 @@
+---
+- name: Add elasticsearch apt-key
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: "Add apt repositories"
+  apt_repository:
+    repo: "deb http://{{ url }}:{{ port }}/repository/{{ repo }}/ stable main"
+
+- name: Update apt
+  apt:
+    update_cache: yes
+
+- name: Install filebeat
+  apt:
+    name: filebeat
+    allow_unauthenticated: yes
+
+- name: "Install filebeat conf templates"
+  template:
+    src: "beats/filebeat.yml.j2"
+    dest: "/etc/filebeat/filebeat.yml"
+    force: yes
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: "Install filebeat modules"
+  shell: "filebeat modules enable {{ item }}"
+  with_items: "{{ filebeat_modules }}"
+
+- name: "Install filebeat modules conf files"
+  template:
+    src: "beats/{{ item }}.yml.j2"
+    dest: "/etc/filebeat/modules.d/{{ item }}.yml"
+    owner: root
+    group: root
+    mode: '0644'
+  with_items: "{{ filebeat_modules }}"
+
+- name: Start Filebeat
+  systemd:
+    state: restarted
+    name: filebeat
+    enabled: yes

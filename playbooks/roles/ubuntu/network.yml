@@ -1,0 +1,26 @@
+---
+- name: Add network interface templates
+  template:
+    src: network/01-netcfg.yaml.j2
+    dest: /etc/netplan/01-netcfg.yaml
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    backup: yes
+    force: yes
+    
+- name: "Create networking service directory"
+  file:
+    path: "/etc/systemd/system/networking.service.d"
+    owner: "root"
+    group: "root"
+    state: directory
+
+- name: "Add networking setup timeout"
+  blockinfile: 
+    dest: /etc/systemd/system/networking.service.d/timeout.conf
+    block: |
+      [Service]
+      TimeoutStartSec=20sec
+    create: yes
+    state: present

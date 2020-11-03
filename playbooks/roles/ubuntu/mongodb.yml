@@ -1,0 +1,85 @@
+---
+- name: Add MongoDB GPG apt Key
+  apt_key:
+    url: https://www.mongodb.org/static/pgp/server-4.2.asc
+    state: present
+
+- name: Add apt repositories for MongoDB
+  apt_repository:
+    repo: "deb [trusted=yes arch=amd64,arm64] https://{{ url }}:{{ port }}/repository/{{ repo }}/ {{ distro }}/mongodb-org/4.2 multiverse"
+
+- name: Update apt and install MongoDB
+  apt: 
+    name: mongodb-org
+    update_cache: yes 
+    allow_unauthenticated: yes
+    state: present
+
+- name: Update apt and install MongoDB
+  pip: 
+    name: pymongo
+    state: present
+
+- name: Allow access to database ports
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    state: enabled
+  with_items:
+    - '27017'
+  tags: port
+
+- name: Insert auth blocks in mongodb
+  blockinfile:
+    path: /etc/mongod.conf
+    block: |
+      security:
+          authorization: 'disabled'
+
+- name: Start MongoDB
+  systemd:
+    state: restarted
+    name: mongod
+    enabled: yes
+
+- name: Create mongodb admin user
+  mongodb_user:
+    database: admin
+    name: "{{ mongodb_admin_user }}"
+    password: "{{ mongodb_admin_password }}"
+    roles: root
+    state: present
+  no_log: true
+
+- name: Insert auth blocks in mongodb
+  blockinfile:
+    path: /etc/mongod.conf
+    block: |
+      security:
+          authorization: 'enabled'
+
+- name: Allow access from outside localhost
+  lineinfile:
+    path: /etc/mongod.conf
+    regexp: 'bindIp:'
+    line: '  bindIp: 0.0.0.0'
+
+- name: Start MongoDB
+  systemd:
+    state: restarted
+    name: mongod
+    enabled: yes
+
+- name: Create mongodb default user 
+  mongodb_user:
+    login_database: admin
+    login_host: localhost
+    login_user: "{{ mongodb_admin_user }}"
+    login_password: "{{ mongodb_admin_password }}"
+    database: "{{ item.database_name }}"
+    name: "{{ item.database_user }}"
+    password: "{{ item.database_password }}"
+    roles: readWrite,dbAdmin,userAdmin
+    state: present
+  with_items: "{{ mongodb_databases }}"
+  no_log: true

@@ -1,0 +1,38 @@
+---
+- name: Populate service facts
+  service_facts:
+
+- name: Install NTP
+  apt:
+    name: ntp
+    allow_unauthenticated: yes
+    state: present
+
+- name: Configure NTP
+  template:
+    src: ntp/ntp.conf.j2
+    dest: /etc/ntp.conf
+  notify:
+    - restart ntpd
+
+- name: Remove tcp access to ntp port
+  ufw:
+    rule: deny
+    port: 123
+    proto: tcp
+
+- name: Allow udp access to ntp port
+  ufw:
+    rule: allow
+    port: 123
+    proto: udp
+
+- name: turn timesyncd service off
+  command: timedatectl set-ntp off
+  when: "'timesyncd' in services"
+
+- name: Enable NTP
+  service:
+    name: ntp
+    state: restarted
+    enabled: yes

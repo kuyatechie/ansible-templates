@@ -1,0 +1,44 @@
+# {{ swap_file }}: Swap file path
+# {{ swap_space }}: Swap space allocation
+# {{ swappiness_value }}: Swappiness value 1-100
+---
+- name: Set swap_file Variable
+  set_fact:
+    swap_file: /swapfile
+    swap_space: 4G
+
+- name: Check if swap file exists
+  stat:
+    path: "{{ swap_file }}"
+  register: swap_file_check
+
+- name: Create swap file
+  command: fallocate -l {{ swap_space }} {{ swap_file }}
+  when: not swap_file_check.stat.exists
+
+- name: Create swap space
+  command: dd if=/dev/zero of=/extraswap bs=1M count=512
+  when: not swap_file_check.stat.exists
+
+- name: Set permissions on swap file
+  file:
+    path: "{{ swap_file }}"
+    mode: 0600
+
+- name: Format swap file
+  command: mkswap {{ swap_file }}
+  when: not swap_file_check.stat.exists
+
+- name: Add to fstab
+  lineinfile:
+    dest: /etc/fstab
+    regexp: "{{ swap_file }}"
+    line: "{{ swap_file }} none swap sw 0 0"
+
+- name: Turn on swap
+  command: swapon -a
+
+- name: Set swapiness
+  sysctl:
+    name: vm.swappiness
+    value: "{{ swappiness_value }}"

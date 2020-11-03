@@ -1,0 +1,51 @@
+---
+- name: "Set Java version"
+  set_fact: 
+    jdk_tarball: "{{ jdk8_tarball }}"
+    jdk_version: "{{ jdk8_version }}"
+  when: jdk == "jdk8"
+
+- name: "Create /opt/local directory"
+  file:
+    path: "/opt/local"
+    state: directory
+    mode: '0755'
+
+- name: "Check if jdk version exists"
+  stat: 
+    path: "/opt/local/{{ jdk_version }}"
+  register: jdk_stat
+
+- name: "Download and install Java"
+  unarchive:
+    src: "http://{{ username }}:{{ password }}@{{ url }}:{{ port }}/repository/{{ repo }}/{{ jdk_tarball }}"
+    remote_src: yes
+    dest: "/opt/local"
+    mode: '0755'
+    validate_certs: no
+  when: jdk_stat.stat.exists == False
+
+- name: "Create jdk symbolic link"
+  file:
+    src: "/opt/local/{{ jdk_version }}"
+    dest: "/opt/local/{{ jdk }}"
+    owner: "root"
+    group: "root"
+    state: link
+  when: jdk_stat.stat.exists == False
+
+- name: "Create java symbolic link"
+  file:
+    src: "/opt/local/{{ jdk }}/bin/java"
+    dest: "/usr/bin/java"
+    owner: "root"
+    group: "root"
+    state: link
+    force: yes
+  when: jdk_stat.stat.exists == False
+
+- name: "Set JAVA_HOME in /etc/environment"
+  lineinfile:
+    path: /etc/environment
+    regexp: '^JAVA_HOME='
+    line: 'JAVA_HOME="/opt/local/{{ jdk }}/bin/java"'

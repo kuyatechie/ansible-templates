@@ -1,0 +1,24 @@
+---
+- name: "Add apt repositories"
+  apt_repository:
+    repo: "deb http://{{ url }}:{{ port }}/repository/{{ ppa_proxy }}/nginx/stable/ubuntu {{ distro }} main"
+    codename: "{{ distro }}"
+
+- name: Install NGINX
+  apt:
+    name: nginx
+    state: present
+    allow_unauthenticated: yes
+    update_cache: yes
+  notify:
+    - "Remove default configuration file"
+    - "Update nginx configuration files"
+    - "Symlink default nginx configuration files"
+    - "Create nginx.service.d directory"
+    - "Add delay into systemctl startup"
+
+- name: Enable NGINX
+  service:
+    name: nginx
+    state: started
+    enabled: yes

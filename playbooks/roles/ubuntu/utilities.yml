@@ -1,0 +1,42 @@
+---
+- name: Stop apt-daily
+  systemd:
+    state: stopped
+    enabled: no
+    name: apt-daily.timer 
+
+- name: Stop apt-daily-upgrade
+  systemd:
+    state: stopped
+    enabled: no
+    name: apt-daily-upgrade.timer
+        
+- name: Wait for /var/lib/dpkg/lock-frontend to be released   
+  shell: while lsof /var/lib/dpkg/lock-frontend ; do sleep 10; done;
+    
+- name: "Install base utilities"
+  apt:
+    name:
+      - wget
+      - curl
+      - vim
+      - unzip
+      - tar
+      - gzip
+      - bzip2
+      - p7zip-full
+      - p7zip-rar
+      - ntp
+      - ntpdate 
+      - apt-transport-https
+      - python3
+      - python3-pip
+      - ufw
+      - psmisc
+      - mlocate
+      - dos2unix
+      - htop
+      - lrzsz
+    update_cache: yes
+    allow_unauthenticated: yes
+    state: present

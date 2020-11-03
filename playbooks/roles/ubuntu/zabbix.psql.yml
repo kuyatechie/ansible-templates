@@ -1,0 +1,96 @@
+---
+- name: Connect to db and create user
+  postgresql_user:
+    name: "{{ zabbix.agent_psql_username }}"
+    password: "{{ zabbix.agent_psql_password }}"
+    role_attr_flags: SUPERUSER
+    expires: infinity
+  become_user: "postgres"
+  no_log: yes
+
+- name: "Create zabbix psql templates directory"
+  file:
+    path: "/var/lib/zabbix/postgresql"
+    state: directory
+    mode: '0775'
+    owner: zabbix
+    group: zabbix
+    recurse: yes
+
+- name: "Install zabbix psql templates"
+  template:
+    src: "zabbix/postgresql/{{ item }}.j2"
+    dest: "/var/lib/zabbix/postgresql/{{ item }}"
+    force: yes
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - pgsql.bgwriter.sql      
+    - pgsql.config.hash.sql           
+    - pgsql.connections.sum.sql
+    - pgsql.discovery.db.sql
+    - pgsql.ping.time.sql
+    - pgsql.replication.recovery_role.sql
+    - pgsql.transactions.sql
+    - pgsql.connections.prepared.sql
+    - pgsql.dbstat.sql           
+    - pgsql.frozenxid.sql     
+    - pgsql.query.time.sql
+    - pgsql.replication.status.sql         
+    - pgsql.uptime.sql
+    - pgsql.cache.hit.sql  
+    - pgsql.connections.sql           
+    - pgsql.dbstat.sum.sql       
+    - pgsql.locks.sql         
+    - pgsql.replication.lag.sql  
+    - pgsql.scans.sql                      
+    - pgsql.wal.stat.sql
+
+- name: "Install zabbix agent configuration file"
+  template:
+    src: "zabbix/zabbix_psql.conf.j2"
+    dest: "/etc/zabbix/zabbix_agentd.conf.d/zabbix_psql_{{ distro }}.conf"
+    force: yes
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Configure pg_hba.conf
+  postgresql_pg_hba:
+    dest: /etc/postgresql/10/main/pg_hba.conf
+    contype: host
+    users: zbx_monitor 
+    source: "{{ item.source }}"
+    databases: all
+    method: "{{ item.method }}"
+    create: true
+  with_items:
+    - { source: '127.0.0.1/32', method: 'trust' }
+    - { source: '0.0.0.0/0', method: 'md5' }
+    - { source: '::0/0', method: 'md5' }
+
+- name: Reload psql configurations
+  postgresql_query:
+    login_host: localhost
+    login_user: "{{ zabbix.agent_psql_username }}"
+    login_password: "{{ zabbix.agent_psql_password }}"
+    query: SELECT pg_reload_conf()
+    db: postgres
+  become_user: "postgres"
+
+- name: "Install zabbix psql templates"
+  template:
+    src: "zabbix/.pgpass.j2"
+    dest: "/var/lib/zabbix/.pgpass"
+    force: yes
+    owner: zabbix
+    group: zabbix
+    mode: '0600'
+  no_log: yes
+
+- name: "Restart zabbix agent"
+  service:
+    name: zabbix-agent
+    state: restarted
+    enabled: yes

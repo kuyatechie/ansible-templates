@@ -1,0 +1,43 @@
+---
+- name: Install zbxsend Module for Python
+  pip:
+    name: 
+      - zbxsend
+      - redis
+    state: present
+  become_user: root
+
+- name: "Create zabbix redis templates directory"
+  file:
+    path: "/etc/zabbix/redis"
+    state: directory
+    mode: '0775'
+    owner: zabbix
+    group: zabbix
+    recurse: yes
+
+- name: "Install zabbix redis templates"
+  template:
+    src: "zabbix/redis/{{ item }}.j2"
+    dest: "/etc/zabbix/redis/{{ item }}"
+    force: yes
+    owner: zabbix
+    group: zabbix
+    mode: '0754'
+  with_items:
+    - 'zbx_redis_stats.py'
+
+- name: "Install zabbix agent configuration file"
+  template:
+    src: "zabbix/zabbix_redis.conf.j2"
+    dest: "/etc/zabbix/zabbix_agentd.conf.d/zabbix_redis_{{ distro }}.conf"
+    force: yes
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Restart zabbix agent"
+  service:
+    name: zabbix-agent
+    state: restarted
+    enabled: yes

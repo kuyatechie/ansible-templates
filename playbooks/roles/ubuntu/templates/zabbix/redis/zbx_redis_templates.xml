@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2020-06-03T12:09:30Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Redis Template for Agent</template>
+            <name>Redis Template for Agent</name>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Redis</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Redis Server</name>
+                    <key>net.tcp.port[&quot;{$HOSTNAME}&quot;,6379]</key>
+                    <delay>30</delay>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}=0</expression>
+                            <name>Redis is down on {HOSTNAME}</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, aof_enabled, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>BOOL_TO_DECIMAL</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, aof_rewrite_in_progress, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>BOOL_TO_DECIMAL</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, aof_rewrite_scheduled, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>BOOL_TO_DECIMAL</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, arch_bits, none]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, blocked_clients, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, client_biggest_input_buf, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, client_longest_output_list, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, connected_clients, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, connected_slaves, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, dbsize, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, evicted_keys, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, expired_keys, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, gcc_version, none]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, instantaneous_ops_per_sec, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, keyspace_hits, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, keyspace_misses, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, latest_fork_usec, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, llenall, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, loading, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>BOOL_TO_DECIMAL</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, lru_clock, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, mem_fragmentation_ratio, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <value_type>FLOAT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, multiplexing_api, none]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, pubsub_channels, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, rdb_bgsave_in_progress, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>BOOL_TO_DECIMAL</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, rdb_changes_since_last_save, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, redis_git_dirty, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, redis_git_sha1, none]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, redis_mode, none]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, redis_version, none]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, rejected_connections, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, role, none]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, total_commands_processed, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, total_connections_received, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, uptime_in_seconds, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <units>s</units>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, used_cpu_sys, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <value_type>FLOAT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, used_cpu_sys_children, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <value_type>FLOAT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, used_cpu_user, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <value_type>FLOAT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, used_cpu_user_children, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <value_type>FLOAT</value_type>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, used_memory, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <units>B</units>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, used_memory_peak, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <units>B</units>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Redis $2</name>
+                    <key>redis[&quot;{$HOSTNAME}&quot;, used_memory_rss, none]</key>
+                    <delay>60</delay>
+                    <history>3d</history>
+                    <trends>90d</trends>
+                    <units>B</units>
+                    <applications>
+                        <application>
+                            <name>Redis</name>
+                        </application>
+                    </applications>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Redis discovery db</name>
+                    <key>redis.discovery</key>
+                    <delay>1800</delay>
+                    <filter>
+                        <conditions>
+                            <condition>
+                                <macro>{#DBNAME}</macro>
+                                <formulaid>A</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Redis $2 - $3 ($1)</name>
+                            <key>redis[{HOSTNAME}, key_space_db_avg_ttl, {#DBNAME}]</key>
+                            <delay>30</delay>
+                            <history>3d</history>
+                            <trends>90d</trends>
+                            <applications>
+                                <application>
+                                    <name>Redis</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Redis $2 - $3 ($1)</name>
+                            <key>redis[{HOSTNAME}, key_space_db_expires, {#DBNAME}]</key>
+                            <delay>30</delay>
+                            <history>3d</history>
+                            <trends>90d</trends>
+                            <applications>
+                                <application>
+                                    <name>Redis</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Redis $2 - $3 ($1)</name>
+                            <key>redis[{HOSTNAME}, key_space_db_keys, {#DBNAME}]</key>
+                            <delay>30</delay>
+                            <history>3d</history>
+                            <trends>90d</trends>
+                            <applications>
+                                <application>
+                                    <name>Redis</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$HOSTNAME}</macro>
+                    <value>localhost</value>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+    <graphs>
+        <graph>
+            <name>Redis clients</name>
+            <ymin_type_1>FIXED</ymin_type_1>
+            <graph_items>
+                <graph_item>
+                    <color>C80000</color>
+                    <item>
+                        <host>Redis Template for Agent</host>
+                        <key>redis[&quot;{$HOSTNAME}&quot;, connected_clients, none]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>00C800</color>
+                    <item>
+                        <host>Redis Template for Agent</host>
+                        <key>redis[&quot;{$HOSTNAME}&quot;, blocked_clients, none]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Redis ops\total lists</name>
+            <ymin_type_1>FIXED</ymin_type_1>
+            <graph_items>
+                <graph_item>
+                    <drawtype>FILLED_REGION</drawtype>
+                    <color>00C800</color>
+                    <item>
+                        <host>Redis Template for Agent</host>
+                        <key>redis[&quot;{$HOSTNAME}&quot;, llenall, none]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <drawtype>FILLED_REGION</drawtype>
+                    <color>C80000</color>
+                    <item>
+                        <host>Redis Template for Agent</host>
+                        <key>redis[&quot;{$HOSTNAME}&quot;, instantaneous_ops_per_sec, none]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Redis used_cpu</name>
+            <ymin_type_1>FIXED</ymin_type_1>
+            <graph_items>
+                <graph_item>
+                    <color>C80000</color>
+                    <item>
+                        <host>Redis Template for Agent</host>
+                        <key>redis[&quot;{$HOSTNAME}&quot;, used_cpu_sys, none]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>00C800</color>
+                    <item>
+                        <host>Redis Template for Agent</host>
+                        <key>redis[&quot;{$HOSTNAME}&quot;, used_cpu_user, none]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Redis used_memory</name>
+            <ymin_type_1>FIXED</ymin_type_1>
+            <graph_items>
+                <graph_item>
+                    <color>C80000</color>
+                    <item>
+                        <host>Redis Template for Agent</host>
+                        <key>redis[&quot;{$HOSTNAME}&quot;, used_memory, none]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>0000C8</color>
+                    <item>
+                        <host>Redis Template for Agent</host>
+                        <key>redis[&quot;{$HOSTNAME}&quot;, used_memory_rss, none]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
+</zabbix_export>

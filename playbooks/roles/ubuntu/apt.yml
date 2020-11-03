@@ -1,0 +1,32 @@
+---
+- name: Install apt-transport-https first
+  apt:
+    name: apt-transport-https
+    state: present
+
+- name: Modify apt sources templates
+  template:
+    src: apt/sources.list.j2
+    dest: /etc/apt/sources.list
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    backup: yes
+  tags: apt
+
+- name: Modify apt auth templates
+  template:
+    src: apt/auth.conf.j2
+    dest: /etc/apt/auth.conf
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    backup: yes
+  tags: apt
+
+- name: Test apt via update
+  apt:
+    update_cache: yes
+    install_recommends: yes
+    state: fixed
+  tags: apt

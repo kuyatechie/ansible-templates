@@ -1,0 +1,65 @@
+---
+- name: Check lsblk
+  shell:
+    cmd: lsblk -n -o NAME -d
+  register: disk_name
+  become_user: root
+
+- name: Copy partition table
+  shell:
+    cmd: "sfdisk -d /dev/{{ disk_name.stdout }}"
+  register: partition_table
+  become_user: root
+
+- name: Backup partition table
+  copy: 
+    content: "{{ partition_table.stdout }}" 
+    dest: "/opt/partitiontable.bak"
+  become_user: root
+
+- name: Cat lsblk
+  shell:
+    cmd: "sfdisk -uS -l /dev/{{ disk_name.stdout }}"
+  register: lsblk
+  become_user: root
+
+- set_fact:
+    disk_sector_start: "{{ lsblk.stdout | regex_search(regexp,'\\1') }}"
+  vars:
+    regexp: '\/dev\/{{ disk_name.stdout }}\w*\s+\D+(\d+)\s+\d+\s+\d+\s+\w+\s+(\d+)\s+\w+'
+  become_user: root
+
+- set_fact:
+    disk_sector_id: "{{ lsblk.stdout | regex_search(regexp,'\\2') }}"
+  vars:
+    regexp: '\/dev\/{{ disk_name.stdout }}\w*\s+\D+(\d+)\s+\d+\s+\d+\s+\w+\s+(\d+)\s+\w+'
+  become_user: root
+
+- set_fact:
+    disk_sector: "{{ disk_sector_start[0] }},,{{ disk_sector_id[0] }},-"
+  become_user: root
+
+- name: Check lsblk
+  shell:
+    cmd: 'echo "{{ disk_sector }}" | sfdisk --force -uS /dev/{{ disk_name.stdout }}'
+  become_user: root
+
+- name: Reboot the server
+  reboot:
+
+- name: Cat blkid
+  shell:
+    cmd: blkid
+  register: blkid
+  become_user: root
+
+- set_fact:
+    disk_partition: "{{ blkid.stdout | regex_search(regexp,'\\1') }}"
+  vars:
+    regexp: '(\/dev\/{{ disk_name.stdout }}\w*)'
+  become_user: root
+
+- name: Resize disk
+  shell:
+    cmd: "resize2fs {{ disk_partition[0] }}"
+  become_user: root

@@ -1,0 +1,10 @@
+---
+- name: Add pip templates
+  template:
+    src: pip/pip.conf.j2
+    dest: /etc/pip.conf
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    backup: yes
+  tags: pip

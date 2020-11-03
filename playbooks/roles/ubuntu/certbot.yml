@@ -1,0 +1,43 @@
+---
+- name: "Add apt repositories"
+  apt_repository:
+    repo: "deb http://{{ url }}:{{ port }}/repository/{{ ppa_proxy }}/certbot/certbot/ubuntu {{ distro }} main"
+    codename: "{{ distro }}"
+
+- name: "Install base utilities"
+  apt:
+    name:
+      - certbot
+      - python-certbot-nginx
+      - python3-certbot
+    update_cache: yes
+    allow_unauthenticated: yes
+    state: present
+
+- name: "Install SSL Certificates"
+  command: "certbot --nginx -m {{ email }} --agree-tos --keep --no-redirect -d {{ dnsname }}"
+  become_user: root
+
+- name: "Create SSL directory if not existing"
+  file:
+    path: "/opt/ssl"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: "Create symlinks to the certificates"
+  file:
+    src: "/etc/letsencrypt/live/{{ dnsname }}/{{ item.src }}"
+    dest: "/opt/ssl/{{ dnsname }}.{{ item.fileext }}"
+    force: yes
+    state: link
+  with_items:
+    - { src: 'fullchain.pem', fileext: 'cert' }
+    - { src: 'privkey.pem', fileext: 'pem' }
+
+- name: "Restart nginx service"
+  systemd:
+    state: restarted
+    name: nginx
+

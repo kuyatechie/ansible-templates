@@ -1,0 +1,35 @@
+---
+- name: "Create zabbix ssl templates directory"
+  file:
+    path: "/etc/zabbix/ssl"
+    state: directory
+    mode: '0775'
+    owner: zabbix
+    group: zabbix
+    recurse: yes
+
+- name: "Install zabbix ssl templates"
+  template:
+    src: "zabbix/ssl/{{ item }}.j2"
+    dest: "/etc/zabbix/ssl/{{ item }}"
+    force: yes
+    owner: zabbix
+    group: zabbix
+    mode: '0754'
+  with_items:
+    - 'ssl_cert_check.sh'
+
+- name: "Install zabbix agent configuration file"
+  template:
+    src: "zabbix/zabbix_ssl.conf.j2"
+    dest: "/etc/zabbix/zabbix_agentd.conf.d/zabbix_ssl_{{ distro }}.conf"
+    force: yes
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Restart zabbix agent"
+  service:
+    name: zabbix-agent
+    state: restarted
+    enabled: yes

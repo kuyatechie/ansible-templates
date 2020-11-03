@@ -1,0 +1,179 @@
+---
+- name: Install apt requirements
+  apt:
+    name: 
+      - postgresql-client
+      - postgresql-10
+      - postgresql-server-dev-10
+  tags: always
+
+- name: Install requirements
+  pip:
+    name: 
+      - psycopg2
+  tags: always
+
+- name: Start postgresql service
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Configure pg_hba.conf for local connections
+  postgresql_pg_hba:
+    dest: /etc/postgresql/10/main/pg_hba.conf
+    contype: local
+    users: all
+    databases: all
+    method: md5
+    create: true
+    
+- name: Create database
+  postgresql_db:
+    name: "{{ item.database_name }}"
+    encoding: "UTF-8"
+    template: template0
+  become_user: "{{ db_admin }}"
+  with_items: "{{ databases }}"
+  no_log: yes
+
+- name: Connect to db and create user
+  postgresql_user:
+    db: "{{ item.database_name }}"
+    name: "{{ item.database_user }}"
+    password: "{{ item.database_password }}"
+    role_attr_flags: SUPERUSER
+    expires: infinity
+    priv: ALL
+  become_user: "{{ db_admin }}"
+  with_items: "{{ databases }}"
+  no_log: yes
+
+- name: Connect to postgres and grant ALL PRIVILEGES
+  postgresql_user:
+    db: postgres
+    name: "{{ item.database_name }}"
+    expires: infinity
+    priv: ALL
+  become_user: "{{ db_admin }}"
+  with_items: "{{ databases }}"
+  no_log: yes
+
+- name: Connect to db and create readonly users
+  postgresql_user:
+    name: "{{ item.database_user }}"
+    password: "{{ item.database_password }}"
+    expires: infinity
+  with_items: "{{ database_readonly_accounts }}"
+  become_user: "{{ db_admin }}"
+  no_log: yes
+
+- name: Connect to db and grant readonly users USAGE in schema public
+  postgresql_privs:
+    db: "{{ item[0].database_name }}"
+    role: "{{ item[1].database_user }}"
+    type: schema
+    objs: public
+    privs: USAGE
+  with_nested:
+    - "{{ databases }}"
+    - "{{ database_readonly_accounts }}"
+  become_user: "{{ db_admin }}"
+  no_log: yes
+
+- name: Connect to db and grant readonly users SELECT in sequence public
+  postgresql_privs:
+    db: "{{ item[0].database_name }}"
+    role: "{{ item[1].database_user }}"
+    type: sequence
+    objs: ALL_IN_SCHEMA
+    privs: SELECT
+  with_nested:
+    - "{{ databases }}"
+    - "{{ database_readonly_accounts }}"
+  become_user: "{{ db_admin }}"
+  no_log: yes
+
+- name: Connect to db and grant readonly users SELECT
+  postgresql_privs:
+    db: "{{ item[0].database_name }}"
+    role: "{{ item[1].database_user }}"
+    objs: ALL_IN_SCHEMA
+    privs: SELECT
+  with_nested:
+    - "{{ databases }}"
+    - "{{ database_readonly_accounts }}"
+  become_user: "{{ db_admin }}"
+  no_log: yes
+
+- name: Configure pg_hba.conf for connections
+  postgresql_pg_hba:
+    dest: /etc/postgresql/10/main/pg_hba.conf
+    contype: host
+    users: '{{ item.database_user }}'
+    source: '{{ item.source }}/32'
+    databases: '{{ item.database_name }}'
+    method: md5
+    create: true
+  with_items: "{{ databases }}"
+  no_log: yes
+
+- name: Configure pg_hba.conf for readonly connections
+  postgresql_pg_hba:
+    dest: /etc/postgresql/10/main/pg_hba.conf
+    contype: host
+    users: '{{ item[0].database_user }}'
+    source: '{{ item[0].source }}'
+    databases: '{{ item[1].database_name }}'
+    method: md5
+    create: true
+  with_nested: 
+    - "{{ database_readonly_accounts }}"
+    - "{{ databases }}"
+  no_log: yes
+
+- name: Configure postgresql.conf file
+  lineinfile:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: '^{{ item.var }}'
+    line: '{{ item.var }} = {{ item.value }}'
+  with_items:
+    - { var: 'shared_preload_libraries', value: 'pg_stat_statements' }
+    - { var: 'pg_stat_statements.track', value: 'all' }
+    - { var: 'log_timezone', value: 'Europe/Helsinki' }
+    - { var: 'timezone', value: 'Europe/Helsinki' }
+
+- name: Get list of listen_addresses
+  set_fact:
+    listen_addresses: "{{ listen_addresses | default('localhost') }}, {{ item.listen_ip }}"
+  with_items: "{{ databases }}"
+  no_log: yes
+
+- name: Add local ip address in listen_addresses
+  lineinfile:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: "^listen_addresses\\s*="
+    line: "listen_addresses = '{{ listen_addresses }}'"
+  
+- name: Allow access to database ports
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    state: enabled
+  with_items:
+    - '5432'
+    - '22'
+  tags: port
+
+- name: Reload psql configurations
+  postgresql_query:
+    login_host: localhost
+    login_user: "{{ item.database_user }}"
+    login_password: "{{ item.database_password }}"
+    db: "{{ item.database_name }}"
+    query: SELECT pg_reload_conf()
+  become_user: "{{ db_admin }}"
+  with_items: "{{ databases }}"
+  no_log: yes
+
+  

@@ -1,0 +1,7 @@
+# Redis
+
+# Discovery
+UserParameter=redis.discovery,/etc/zabbix/redis/zbx_redis_stats.py localhost -p 6379
+
+# Return Redis statistics
+UserParameter=redis[*],/etc/zabbix/redis/zbx_redis_stats.py $1 $2 $3
